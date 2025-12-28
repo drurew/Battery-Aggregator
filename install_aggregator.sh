@@ -81,3 +81,13 @@ echo "  svc -d /service/bms-aggregator   # Stop"
 echo "  svc -u /service/bms-aggregator   # Start"
 echo "  svc -t /service/bms-aggregator   # Restart"
 echo ""
+
+# Copy config file if it exists
+if [ -f "config.ini" ]; then
+    echo "Copying config.ini..."
+    cp config.ini /data/bms_aggregator/
+    chmod 644 /data/bms_aggregator/config.ini
+    echo "Config file installed. Edit /data/bms_aggregator/config.ini to customize."
+else
+    echo "No config.ini found. Service will use embedded defaults."
+fi

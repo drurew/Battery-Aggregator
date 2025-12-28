@@ -29,12 +29,42 @@ Automatically adjusts charging based on battery state differences:
 | SOC Difference | Alarm Level | Max Charge Current | Action |
 |---------------|-------------|-------------------|---------|
 | 0-5% | OK (0) | 100% (150A) | Normal operation |
-| 5-10% | OK (0) | 85% (128A) | Slight reduction |
-| 10-15% | Warning (1) | 66% (99A) | Moderate reduction |
-| >15% | Alarm (2) | 33% (50A) | Severe reduction |
+| 5-15% | OK (0) | 85% (128A) | Slight reduction |
+| 15-20% | Warning (1) | 66% (99A) | Moderate reduction |
+| >20% | Alarm (2) | 33% (50A) | Severe reduction |
 | BMS Cell Alarm | Alarm (2) | 33% (50A) | BMS detected internal issue |
 
 As batteries equalize, charge current automatically increases back to normal.
+
+## Configuration
+
+Starting with v1.1.0, the aggregator supports a configuration file for easy customization. Copy `config.ini` to `/data/bms_aggregator/` on your Cerbo GX and edit the values:
+
+```bash
+scp config.ini root@<cerbo-ip>:/data/bms_aggregator/
+ssh root@<cerbo-ip>
+nano /data/bms_aggregator/config.ini
+# Edit thresholds as needed
+svc -t /service/bms-aggregator  # Restart service
+```
+
+### Configuration Options
+
+The config file allows you to adjust:
+- **Imbalance thresholds**: When to trigger warnings and alarms
+- **Charge current limits**: How much to reduce charging during imbalance
+- **Battery parameters**: Capacity, voltages, discharge limits
+- **BMS service names**: Adapt to your specific setup
+- **Update interval**: Balance responsiveness vs CPU usage
+- **Debug logging**: Enable detailed logs for troubleshooting
+
+See [CONFIGURATION.md](CONFIGURATION.md) for detailed documentation of all available options.
+
+**Default Thresholds (v1.1.0)**:
+- Warning: 15% SOC difference (increased from 10% in v1.1.0)
+- Alarm: 20% SOC difference (increased from 15% in v1.1.0)
+
+These defaults are suitable for battery banks where batteries have different charge/discharge characteristics and won't equalize naturally.
 
 ## Requirements
 

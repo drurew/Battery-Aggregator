@@ -391,3 +391,23 @@ dbus -y com.victronenergy.battery.canopen_bms_node1 /Soc GetValue
 - [INSTALL.md](INSTALL.md) - Installation instructions
 - [README.md](README.md) - Features and usage
 - [Victron D-Bus API](https://github.com/victronenergy/venus/wiki/dbus-api) - Official documentation
+
+## Version History
+
+### v1.1.0 Changes
+- Added configuration file support (`config.ini`)
+- Increased default warning threshold from 10% to 15%
+- Increased default alarm threshold from 15% to 20%
+- Made all parameters configurable without code modification
+- Added debug logging option
+
+### Rationale for Increased Thresholds
+If your battery bank has batteries with different charge/discharge characteristics (e.g., different internal resistance, age, or chemistry variations), the SOC imbalance will persist or even increase during charging. In such cases, the original 10% warning threshold would trigger constantly. The new 15% warning and 20% alarm thresholds provide protection while avoiding nuisance alarms for batteries that naturally operate at different SOC levels.
+
+To use the old v1.0.0 thresholds, set:
+```ini
+[ImbalanceThresholds]
+imbalance_warning_threshold = 10.0
+imbalance_alarm_threshold = 15.0
+```
+

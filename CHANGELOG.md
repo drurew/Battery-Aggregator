@@ -107,3 +107,39 @@ To contribute to this changelog:
 For issues or feature requests, please visit:
 - GitHub Issues: https://github.com/drurew/Battery-Aggregator/issues
 - Victron Community: https://community.victronenergy.com/
+
+## [1.1.0] - 2025-12-28
+
+### Added
+- **Configuration File Support**: New `config.ini` file allows customization of all thresholds and parameters without modifying Python code
+- Configurable imbalance thresholds (OK, Warning, Alarm levels)
+- Configurable charge current limits (nominal and reduced)
+- Configurable battery parameters (capacity, voltages, discharge current)
+- Configurable BMS service names and device instance
+- Configurable update interval and debug logging
+- Default configuration values embedded in code (works without config file)
+
+### Changed
+- **Increased default warning threshold from 10% to 15%** - Better suited for battery banks with mixed charge/discharge characteristics
+- **Increased default alarm threshold to 20%** (was implicitly >15%)
+- Firmware version updated to 1.1.0
+- Charge current calculation now uses configured thresholds from config file
+- Service logs configuration values on startup for transparency
+- Update interval now configurable (default still 2.0 seconds)
+
+### Technical Details
+- Uses Python's `configparser` for INI file parsing
+- Config file location: `/data/bms_aggregator/config.ini`
+- Falls back to embedded defaults if config file missing or invalid
+- All numeric values validated through ConfigParser type conversion
+- Config changes require service restart: `svc -t /service/bms-aggregator`
+
+### Rationale
+This update addresses scenarios where one battery in a parallel bank has different charge/discharge characteristics than the others. In such cases, the SOC imbalance will persist or increase during charging, not equalize. The increased thresholds (15% warning, 20% alarm) prevent constant warnings while still providing protection against severe imbalance.
+
+### Migration from v1.0.0
+Existing installations will continue working with embedded defaults. To customize:
+1. Copy `config.ini` to `/data/bms_aggregator/` on Cerbo GX
+2. Edit values as needed
+3. Restart service: `svc -t /service/bms-aggregator`
+
