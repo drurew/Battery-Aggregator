@@ -40,8 +40,12 @@ As batteries equalize, charge current automatically increases back to normal.
 
 ### Method 1: SetupHelper (Package Manager) - Recommended
 
-1.  Download the latest release archive or clone this repository to `/data/battery-aggregator`.
-2.  Run the setup script.
+1.  **Online Install**: Add the repository URL to SetupHelper and install from the menu.
+2.  **Offline/USB Install**:
+    *   Download the verified release package (`battery-aggregator-vX.X.X.tar.gz`) from GitHub Releases.
+    *   *Alternatively*, create it yourself: Run `./create_package.sh` in the source folder.
+    *   Copy the `.tar.gz` file to a USB stick.
+    *   Insert into Cerbo GX and install via SetupHelper's "Install from USB/Storage" option.
 
 ### Method 2: Manual/Script Install
 
