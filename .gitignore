@@ -41,3 +41,5 @@ credentials.txt
 # Local testing
 test_*.py
 scratch/
+*.tar.gz
+__pycache__/
