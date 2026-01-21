@@ -109,7 +109,7 @@ class BMSAggregator:
         self.dbusservice.add_path('/DeviceInstance', self.device_instance)
         self.dbusservice.add_path('/ProductId', 0)
         self.dbusservice.add_path('/ProductName', 'BMS Aggregator')
-        self.dbusservice.add_path('/FirmwareVersion', '1.1.0')
+        self.dbusservice.add_path('/FirmwareVersion', '1.2.0')
         self.dbusservice.add_path('/HardwareVersion', '1.0.0')
         self.dbusservice.add_path('/Connected', 1)
         self.dbusservice.add_path('/CustomName', 'BMS Aggregator', writeable=True)

@@ -36,6 +36,26 @@ Automatically adjusts charging based on battery state differences:
 
 As batteries equalize, charge current automatically increases back to normal.
 
+## Installation
+
+### Method 1: SetupHelper (Package Manager) - Recommended
+
+1.  Download the latest release archive or clone this repository to `/data/battery-aggregator`.
+2.  Run the setup script.
+
+### Method 2: Manual/Script Install
+
+1.  Connect to your Venus OS device via SSH.
+2.  Run the following commands:
+    ```bash
+    wget https://github.com/drurew/Battery-Aggregator/archive/refs/heads/main.zip
+    unzip main.zip
+    mv Battery-Aggregator-main /data/battery-aggregator
+    cd /data/battery-aggregator
+    chmod +x setup
+    ./setup install
+    ```
+
 ## Configuration
 
 Starting with v1.1.0, the aggregator supports a configuration file for easy customization. Copy `config.ini` to `/data/bms_aggregator/` on your Cerbo GX and edit the values:
