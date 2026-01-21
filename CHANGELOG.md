@@ -5,6 +5,19 @@ All notable changes to the Battery Aggregator project will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-01-21
+
+### Added
+- **SetupHelper Support**: Native package structure for Kwindrem's SetupHelper.
+- **Packaging Scripts**: Added `create_package.sh` for easy offline package generation.
+- **GitHub Actions**: Automated build pipeline for `.tar.gz` releases.
+- **Docs**: Improved installation documentation for USB/Offline use.
+
+## [1.1.0] - 2026-01-15
+
+### Added
+- **Configuration File**: Added `config.ini` support for easier tuning without code changes.
+
 ## [1.0.0] - 2025-12-28
 
 ### Added
