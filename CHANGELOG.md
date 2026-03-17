@@ -5,6 +5,17 @@ All notable changes to the Battery Aggregator project will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-01-21
+
+### Fixed
+- **Issue #3 (SAFETY)**: Added battery offline safety monitoring to prevent dangerous conditions where offline batteries could mask overloading of remaining batteries
+- **Issue #4 (SERVICE NAMING)**: Changed service name from socketcan_can0 format to aggregator format to avoid conflicts with other CAN bus services
+
+### Added
+- `/Alarms/BatteryOffline` D-Bus path for monitoring battery connectivity
+- Expected vs actual battery count tracking for safety monitoring
+- Critical error logging when batteries go offline
+
 ## [1.2.0] - 2026-01-21
 
 ### Added
