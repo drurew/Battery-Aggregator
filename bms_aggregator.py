@@ -66,12 +66,16 @@ class BMSAggregator:
         
         # Apply configuration
         self.device_instance = self.config.getint('BMS', 'device_instance')
-        self.servicename = f'com.victronenergy.battery.socketcan_can0_di{self.device_instance}_uc1537'
+        self.servicename = f'com.victronenergy.battery.aggregator_di{self.device_instance}'
         self.bms_services = [
             self.config.get('BMS', 'bms1_service'),
             self.config.get('BMS', 'bms2_service'),
             self.config.get('BMS', 'bms3_service')
         ]
+        
+        # Track expected vs actual battery count for safety monitoring
+        self.expected_battery_count = len([s for s in self.bms_services if s and s.strip()])
+        self.last_online_count = 0
         
         # Charge current limits
         self.nominal_charge_current = self.config.getfloat('ChargeLimits', 'nominal_charge_current')
@@ -150,6 +154,7 @@ class BMSAggregator:
         self.dbusservice.add_path('/Alarms/LowChargeTemperature', 0, writeable=False)
         self.dbusservice.add_path('/Alarms/HighTemperature', 0, writeable=False)
         self.dbusservice.add_path('/Alarms/LowTemperature', 0, writeable=False)
+        self.dbusservice.add_path('/Alarms/BatteryOffline', 0, writeable=False)
         
         log.info("BMS Aggregator service registered on D-Bus")
         
@@ -176,11 +181,16 @@ class BMSAggregator:
             bms_data = []
             
             # Read from each BMS with detailed info
+            online_count = 0
             for idx, service in enumerate(self.bms_services):
                 voltage = self.get_bms_value(service, '/Dc/0/Voltage')
                 soc = self.get_bms_value(service, '/Soc')
                 current = self.get_bms_value(service, '/Dc/0/Current', 0.0)
                 temp = self.get_bms_value(service, '/Dc/0/Temperature')
+                
+                # Track online batteries (those with valid voltage readings)
+                if voltage is not None:
+                    online_count += 1
                 
                 # BMS internal cell alarms (not raw voltages)
                 cell_imbalance_alarm = self.get_bms_value(service, '/Alarms/CellImbalance', 0)
@@ -208,6 +218,21 @@ class BMSAggregator:
                     currents.append(current)
                 if temp is not None:
                     temps.append(temp)
+            
+            # SAFETY CHECK: Monitor battery count vs expected
+            battery_offline_alarm = 0
+            if online_count < self.expected_battery_count:
+                battery_offline_alarm = 2  # Critical alarm
+                log.error(f"BATTERY OFFLINE ALARM: Expected {self.expected_battery_count} batteries, only {online_count} online!")
+                log.error("This may indicate dangerous overloading of remaining batteries!")
+            elif online_count != self.last_online_count:
+                # Log changes in battery count
+                if online_count > self.last_online_count:
+                    log.info(f"Battery count increased: {self.last_online_count} -> {online_count}")
+                else:
+                    log.warning(f"Battery count decreased: {self.last_online_count} -> {online_count}")
+            
+            self.last_online_count = online_count
             
             # Detect BMS internal cell alarms (cells within a single battery)
             bms_has_cell_alarm = any([
@@ -273,12 +298,15 @@ class BMSAggregator:
             # Update charge current dynamically
             self.dbusservice['/Info/MaxChargeCurrent'] = charge_current
             
-            # Update alarm
+            # Update alarms
             self.dbusservice['/Alarms/CellImbalance'] = alarm_level
+            self.dbusservice['/Alarms/BatteryOffline'] = battery_offline_alarm
             
             # Log summary (formatted SOC percentages)
             soc_strings = [f"{s:.0f}%" for s in socs]
             log.info(f"SOCs: {soc_strings} -> Using lowest: {aggregated_soc:.0f}% (range: {imbalance_percent:.0f}%)")
+            if battery_offline_alarm > 0:
+                log.error(f"CRITICAL: {self.expected_battery_count - online_count} battery(ies) offline!")
             
         except Exception as e:
             log.error(f"Error in update loop: {e}")
