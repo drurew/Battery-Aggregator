@@ -251,10 +251,10 @@ class BMSAggregator:
                 return True
             
             # AGGREGATION LOGIC:
-            # 1. Average SOC (all batteries same capacity in parallel)
+            # 1. Use LOWEST SOC for safety (prevents overcharging weaker battery)
             # 2. Average voltages (parallel configuration)
             # 3. Sum currents (parallel configuration)
-            aggregated_soc = sum(socs) / len(socs)
+            aggregated_soc = min(socs)
             aggregated_voltage = sum(voltages) / len(voltages)
             aggregated_current = sum(currents)
             aggregated_temp = sum(temps) / len(temps) if temps else None
