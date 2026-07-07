@@ -67,6 +67,7 @@ class BMSAggregator:
         # Apply configuration
         self.device_instance = self.config.getint('BMS', 'device_instance')
         self.servicename = f'com.victronenergy.battery.aggregator_di{self.device_instance}'
+        self.config_path = config_file
         self.bms_services = [
             self.config.get('BMS', 'bms1_service'),
             self.config.get('BMS', 'bms2_service'),
@@ -111,7 +112,7 @@ class BMSAggregator:
         
         # Add mandatory paths for battery service
         self.dbusservice.add_path('/DeviceInstance', self.device_instance)
-        self.dbusservice.add_path('/ProductId', 0)
+        self.dbusservice.add_path('/ProductId', 0xB005)
         self.dbusservice.add_path('/ProductName', 'BMS Aggregator')
         self.dbusservice.add_path('/FirmwareVersion', '1.2.0')
         self.dbusservice.add_path('/HardwareVersion', '1.0.0')
@@ -136,11 +137,15 @@ class BMSAggregator:
         self.dbusservice.add_path('/System/MinCellTemperature', None, writeable=False)
         self.dbusservice.add_path('/System/MaxCellTemperature', None, writeable=False)
         
-        # Charge/discharge limits
+        # Charge/discharge limits — /Info/MaxChargeVoltage must be set for BMS detection
         self.dbusservice.add_path('/Info/MaxChargeVoltage', self.max_charge_voltage, writeable=False)
         self.dbusservice.add_path('/Info/MaxChargeCurrent', self.nominal_charge_current, writeable=False)
         self.dbusservice.add_path('/Info/MaxDischargeCurrent', self.max_discharge_current, writeable=False)
         self.dbusservice.add_path('/Info/BatteryLowVoltage', self.battery_low_voltage, writeable=False)
+        
+        # Required for systemcalc auto-detection and overview display
+        self.dbusservice.add_path('/Capabilities/ChargeVoltageControl', 1, writeable=False)
+        self.dbusservice.add_path('/InstalledCapacity', self.capacity, writeable=False)
         
         # Alarms
         self.dbusservice.add_path('/Alarms/LowVoltage', 0, writeable=False)

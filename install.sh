@@ -9,7 +9,7 @@ if [ $# -gt 0 ]; then
     ACTION=$1
 fi
 
-packageName="battery-aggregator"
+packageName="bms_aggregator"
 installPath="/data/$packageName"
 serviceName="bms-aggregator"
 servicePath="/service/$serviceName"
@@ -97,7 +97,7 @@ install_package() {
     # 4. Install Service
     install_service
     
-    register_mod "bms-aggregator" "Battery Aggregator" "v1.0.0" "https://github.com/drurew/Battery-Aggregator" "$installPath"
+    register_mod "bms-aggregator" "Battery Aggregator" "v1.2.0" "https://github.com/drurew/Battery-Aggregator" "$installPath"
 
     log_message "Installation complete."
 }
